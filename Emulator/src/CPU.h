@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <cstdint>
+#include <bitset>
 
 /* The Sharp CPU is emulated here. */
 
@@ -45,7 +46,86 @@
 
 class CPU {
 public:
+	void reset();
+
+	void cycle();
 
 private:
+
+	// 64 KiB of memory.
+	uint16_t memory[65536];
+
+	// 16-bit address buffer
+	uint16_t addressBuffer;
+
+	/* CPU registers and flags */
+	
+	// 8-bit accumulator (A)
+	uint8_t accumulator;
+
+	/* 8-bit status flags;
+	* Bit 7: (Z) Zero
+	* Bit 6: (N) Subtraction (BCD)
+	* Bit 5: (H) Half-carry (BCD)
+	* Bit 4: (C) Carry
+	* */
+	std::bitset<8> flags;
+
+	// 16-bit BC bitset
+	std::bitset<16> BC;
+
+	// 16-bit DE bitset
+	std::bitset<16> DE;
+
+	// 16-bit HL bitset
+	std::bitset<16> HL;
+
+	// 16- bit stack pointer
+	uint16_t stackPointer;
+
+	// 16-bit program counter
+	uint16_t programCounter;
+
+	/* 
+	* Think of creating a "register pair" template class which then has references for registers.
+	*
+		uint8_t regs[8];
+		uint8_t &B = regs[0];
+		uint8_t &C = regs[1];
+		regpair<0,1> BC;
+	*/
+
+private:
+
+	/* REGISTER READ/WRITE */
+	
+	// Load a value into the B register.
+	void B(uint8_t val);
+	// Read from the B register
+	uint8_t B();
+	// Load a value into the C register.
+	void C(uint8_t val);
+	// Read from the C register
+	uint8_t C();
+	// Load a value into the D register.
+	void D(uint8_t val);
+	// Read from the D register
+	uint8_t D();
+	// Load a value into the E register.
+	void E(uint8_t val);
+	// Read from the E register
+	uint8_t E();
+	// Load a value into the H register.
+	void H(uint8_t val);
+	// Read from the H register
+	uint8_t H();
+	// Load a value into the L register.
+	void L(uint8_t val);
+	// Read from the L register
+	uint8_t L();
+
+
+
+	/* OPCODES */
 
 };
