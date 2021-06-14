@@ -46,6 +46,9 @@
 
 class CPU {
 public:
+
+	CPU();
+
 	void reset();
 
 	void cycle();
@@ -95,7 +98,7 @@ private:
 		regpair<0,1> BC;
 	*/
 
-private:
+public:
 
 	/* REGISTER READ/WRITE */
 	
