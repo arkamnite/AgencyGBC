@@ -20,5 +20,10 @@ int main()
 
 	cpu.cycle();
 
+	uint8_t value = 0b10010010;
+	std::cout << cpu.BC.getPair().to_string() << "\n" << std::bitset<8>(value).to_string() << std::endl;
+	cpu.load(&cpu.BC.low, value);
+	std::cout << cpu.BC.getPair().to_string() << "\n" << std::bitset<8>(value).to_string() << std::endl;
+
 	std::cin >> x;
 }

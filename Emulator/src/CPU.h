@@ -84,6 +84,7 @@ public:
 	void loadROM(std::string filename);
 
 private:
+public:
 
 	// 64 KiB of memory.
 	uint16_t memory[65536];
@@ -118,7 +119,8 @@ private:
 	// HL Register Pair
 	registerPair HL;
 
-protected:
+private:
+public:
 
 	/* =================================================================== UTILITY =============================================================== */
 
@@ -138,14 +140,23 @@ protected:
 	// Load. Specifies a single register to load into, as well as a value to store.
 	void load(std::bitset<8>* reg, uint8_t val);
 
+	// Load. Specifies a single register to load into, as well as a single register to load a value from.
+	void load(std::bitset<8>* destination, std::bitset<8>* source);
+
 	// Load. Specifies a register pair to load a value into, as well as a value to store.
 	void load(registerPair* regPair, uint8_t val);
+
+	// Load. Specifies a register pair to store the accumulator value INTO.
+	void load(registerPair* destination);
 
 	// Arithmetic add with immediate operand. These all store the values in A.
 	void add(uint8_t value);
 
 	// Arithmetic add. These store the values in A, with a value from one of the existing registers.
 	void add(registerPair* source);
+
+	// Arithmetic add. Specifies a register pair destination, as well as a source to add to the value in the destination already.
+	void add(registerPair* destination, registerPair* source);
 
 	// Arithmetic add with carry. These all store the values in A.
 	void addc(uint8_t value);
@@ -173,6 +184,8 @@ protected:
 
 	// AND operation, 8-bit immediate address
 	void AND(uint8_t operand);
+
+	// AND operation, 
 
 	// OR operation
 	void OR(uint8_t operand);
