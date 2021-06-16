@@ -133,37 +133,49 @@ protected:
 	/* -------------------------------------------------------------- 8-BIT OPCODES -------------------------------------------------------------- */
 	
 	// 8-bit loading opcodes. Specifies a destination address as well as a value to store.
-	void load8bit(uint16_t addr, uint8_t val);
+	void load(uint16_t addr, uint8_t val);
 
-	// 8-bit arithmetic add. These all store the values in A.
-	void add8bit(uint8_t value);
+	// Load. Specifies a single register to load into, as well as a value to store.
+	void load(std::bitset<8>* reg, uint8_t val);
 
-	// 8-bit arithmetic add. These store the values in A, with a value from one of the existing registers.
-	void add8bit(registerPair* source);
+	// Load. Specifies a register pair to load a value into, as well as a value to store.
+	void load(registerPair* regPair, uint8_t val);
 
-	// 8-bit arithmetic add with carry. These all store the values in A.
-	void addc8bit(uint8_t value);
+	// Arithmetic add with immediate operand. These all store the values in A.
+	void add(uint8_t value);
 
-	// 8-bit arithmetic add with carry. These store the values in A, with a value from one of the existing registers.
-	void addc8bit(registerPair* source);
+	// Arithmetic add. These store the values in A, with a value from one of the existing registers.
+	void add(registerPair* source);
 
-	// 8-bit arithmetic subtract. These all store the values in A.
-	void sub8bit(uint8_t value);
+	// Arithmetic add with carry. These all store the values in A.
+	void addc(uint8_t value);
 
-	// 8-bit arithmetic subtract. These store the values in A, with a value from one of the existing registers.
-	void sub8bit(registerPair* source);
+	// Arithmetic add with carry. These store the values in A, with a value from one of the existing registers.
+	void addc(registerPair* source);
 
-	// 8-bit arithmetic subtract with carry. These all store the values in A.
-	void subc8bit(uint8_t value);
+	// Arithmetic subtract. These all store the values in A.
+	void sub(uint8_t value);
 
-	// 8-bit arithmetic subtract with carry. These store the values in A, with a value from one of the existing registers.
-	void subc8bit(registerPair* source);
+	// Arithmetic subtract. These store the values in A, with a value from one of the existing registers.
+	void sub(registerPair* source);
 
-	// 8-bit arithmetic increment. These take a pointer to the register to increment.
-	void inc8bit(registerPair* reg);
+	// Arithmetic subtract with carry. These all store the values in A.
+	void subc(uint8_t value);
+
+	// Arithmetic subtract with carry. These store the values in A, with a value from one of the existing registers.
+	void subc(registerPair* source);
+
+	// Arithmetic increment. These take a pointer to the register to increment.
+	void inc(registerPair* reg);
 	
-	// 8-bit arithmetic decrement. These take a pointer to the register to decrement.
-	void dec8bit(registerPair* reg);
+	// Arithmetic decrement. These take a pointer to the register to decrement.
+	void dec(registerPair* reg);
+
+	// AND operation, 8-bit immediate address
+	void AND(uint8_t operand);
+
+	// OR operation
+	void OR(uint8_t operand);
 
 
 
