@@ -83,6 +83,8 @@ public:
 
 	void cycle();
 
+	void cycleLog();
+
 	// This will load the contents of a ROM into the memory.
 	void loadROM(std::string filename);
 
@@ -200,9 +202,15 @@ private:
 
 	// Arithmetic increment. These take a pointer to the register to increment.
 	void inc(registerPair* reg);
+
+	// Arithmetic increment on a single register.
+	void inc(std::bitset<8>* reg);
 	
 	// Arithmetic decrement. These take a pointer to the register to decrement.
 	void dec(registerPair* reg);
+
+	// Arithmetic decrement on a single register.
+	void dec(std::bitset<8>* reg);
 
 	// AND operation, 8-bit immediate address
 	void AND(uint8_t operand);

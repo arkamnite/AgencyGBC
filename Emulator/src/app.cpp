@@ -26,13 +26,18 @@ int main()
 
 	CPU cpu;
 	cpu.reset();
-	cpu.loadOpcode(0x0001);
+	/*cpu.loadOpcode(0x0004);
+	cpu.loadOpcode(0x0004);
+	cpu.loadOpcode(0x0004);
+	cpu.loadOpcode(0x0004);
+	cpu.loadOpcode(0x0004);*/
+	/*cpu.loadOpcode(0x0001);
 	cpu.loadOpcode(0x00FF);
 	cpu.loadOpcode(0x00AA);
 	cpu.loadOpcode(0x003E);
 	cpu.loadOpcode(0x004F);
 	cpu.loadOpcode(0x004F);
-	cpu.loadOpcode(0x0041);
+	cpu.loadOpcode(0x0041);*/
 
 	/*std::cout <<"BC Pair: " << cpu.BC.getPair() << std::endl;
 	cpu.BC.setHigh(0b10101011);
@@ -41,29 +46,55 @@ int main()
 	std::cout << "BC Pair: " << cpu.BC.getPair() << std::endl;
 	std::cout << "B value: " << cpu.BC.high << std::endl;
 	std::cout << "C value: " << cpu.BC.low << std::endl;*/
+	/*cpu.resetPC();
+	printReg(&cpu);
+	std::cin;
+	cpu.cycle();
+	printReg(&cpu);
+	std::cin;
+	cpu.cycle();
+	printReg(&cpu);
+	std::cin;
+	cpu.cycle();
+	printReg(&cpu);
+	std::cin;
+	cpu.cycle();
+	printReg(&cpu);
+	std::cin;
+	cpu.cycle();
+	printReg(&cpu);
+	std::cin;
+	cpu.cycle();
+	printReg(&cpu);
+	std::cin;
+	cpu.cycle();
+	cpu.cycle();
+	cpu.cycle();
+	cpu.cycle();
+	cpu.cycle();
+	printReg(&cpu);*/
+
+	cpu.loadOpcode(0x0006);
+	cpu.loadOpcode(0x00FA);
+	cpu.loadOpcode(0x0004);
+	cpu.loadOpcode(0x0003);
 	cpu.resetPC();
+
+	/*cpu.cycle();
 	printReg(&cpu);
-	std::cin;
 	cpu.cycle();
 	printReg(&cpu);
-	std::cin;
 	cpu.cycle();
 	printReg(&cpu);
-	std::cin;
 	cpu.cycle();
 	printReg(&cpu);
-	std::cin;
 	cpu.cycle();
-	printReg(&cpu);
-	std::cin;
-	cpu.cycle();
-	printReg(&cpu);
-	std::cin;
-	cpu.cycle();
-	printReg(&cpu);
-	std::cin;
-	cpu.cycle();
-	printReg(&cpu);
+	printReg(&cpu);*/
+
+	cpu.cycleLog();
+	cpu.cycleLog();
+	cpu.cycleLog();
+	cpu.cycleLog();
 
 	/*cpu.cycle();
 	cpu.cycle();

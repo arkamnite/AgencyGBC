@@ -17,10 +17,49 @@ void CPU::reset()
 	HL.setPair(0x0000);
 }
 
+std::string regToHex(registerPair* reg)
+{
+	std::stringstream regString;
+	regString << std::hex << std::uppercase << reg->getPair().to_ullong();
+	return regString.str();
+}
+
+std::vector<std::string> CPU::getRegisterValues()
+{
+	std::vector<std::string> regvals = {};
+
+	std::stringstream acc;
+	acc << std::hex << std::uppercase << accumulator;
+
+	regvals.push_back("Accumulator: " + acc.str());
+	regvals.push_back("BC: " + regToHex(&BC));
+	regvals.push_back("DE: " + regToHex(&DE));
+	regvals.push_back("HL: " + regToHex(&HL));
+	regvals.push_back("PC: " + std::to_string(programCounter));
+
+	std::stringstream opS;
+	opS << std::hex << std::uppercase << memory[programCounter - 1];
+
+	regvals.push_back("Last Opcode: " + opS.str());
+	regvals.push_back("Cycles: " + std::to_string(cycles));
+	regvals.push_back("\n");
+	return regvals;
+}
+
 void CPU::cycle()
 {
 	uint16_t op = memory[programCounter];
 	decode_execute(op);
+}
+
+void CPU::cycleLog()
+{
+
+	cycle();
+
+	std::vector<std::string> v = getRegisterValues();
+	for (const auto& i : v)
+		std::cout << i << '\n';
 }
 
 void CPU::loadOpcode(uint16_t opcode)
@@ -34,21 +73,6 @@ void CPU::resetPC()
 	programCounter = 0;
 }
 
-std::vector<std::string> CPU::getRegisterValues()
-{
-	std::vector<std::string> regvals = {};
-
-	std::stringstream acc;
-	acc << std::setfill('0') << std::setw(9) << std::hex << accumulator;
-
-	regvals.push_back("Accumulator: " + acc.str());
-	regvals.push_back("BC: " + BC.getPair().to_string());
-	regvals.push_back("DE: " + DE.getPair().to_string());
-	regvals.push_back("HL: " + HL.getPair().to_string());
-	regvals.push_back("Cycles: " + std::to_string(cycles));
-	regvals.push_back("\n");
-	return regvals;
-}
 
 void CPU::decode_execute(uint16_t opcode)
 {
@@ -76,7 +100,26 @@ void CPU::decode_execute(uint16_t opcode)
 		programCounter += 1;
 		cycles += 8;
 		break;
-
+	case 0x0004: // INC B
+		inc(&BC.high);
+		programCounter += 1;
+		cycles += 4;
+		break;
+	case 0x0005: // DEC B
+		dec(&BC.low);
+		programCounter += 1;
+		cycles += 4;
+		break;
+	case 0x0006: // LD B,d8
+		load(&BC.high, val);
+		programCounter += 2;
+		cycles += 4;
+		break;
+	case 0x0007: // TODO: RLCA
+		break;
+	case 0x0008: // TODO: LD (a16), SP
+		break;
+	
 	/* =================================== ROW 0x001x ==============================*/
 	
 	case 0x0012: // LD (DE),A
@@ -157,6 +200,10 @@ void CPU::decode_execute(uint16_t opcode)
 		programCounter++;
 		cycles += 4;
 		break;
+	default:
+		programCounter++;
+		cycles += 4;
+		break;
 	}
 }
 
@@ -178,8 +225,7 @@ void CPU::load(uint16_t addr, uint8_t val)
 
 void CPU::load(std::bitset<8>* reg, uint8_t val)
 {
-	reg->operator&=(0b00000000);
-	reg->operator|=(val);
+	*reg = val;
 }
 
 void CPU::loadAccumulator(uint8_t val)
@@ -189,9 +235,10 @@ void CPU::loadAccumulator(uint8_t val)
 
 void CPU::load(std::bitset<8>* destination, std::bitset<8>* source)
 {
-	destination->operator&=(0);
+	/*destination->operator&=(0);
 	for (int i = 0; i < 8; i++)
-		destination->set(i, source->operator[](i));
+		destination->set(i, source->operator[](i));*/
+	*destination = *source;
 
 }
 
@@ -259,8 +306,22 @@ void CPU::inc(registerPair* reg)
 	reg->setPair(++value);
 }
 
+void CPU::inc(std::bitset<8>* reg)
+{
+	int val = (int) reg->to_ulong();
+	*reg = ++val;
+}
+
 void CPU::dec(registerPair* reg)
 {
+	uint16_t value = reg->toInt();
+	reg->setPair(--value);
+}
+
+void CPU::dec(std::bitset<8>* reg)
+{
+	int val = (int)reg->to_ulong();
+	*reg = --val;
 }
 
 void CPU::AND(uint8_t operand)
