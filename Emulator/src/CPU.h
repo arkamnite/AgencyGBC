@@ -6,6 +6,9 @@
 #include <bitset>
 #include <string>
 #include <memory>
+#include <sstream>
+#include <vector>
+#include <iomanip>
 
 
 class registerPair {
@@ -83,19 +86,24 @@ public:
 	// This will load the contents of a ROM into the memory.
 	void loadROM(std::string filename);
 
+	void loadOpcode(uint16_t opcode);
+
+	void resetPC();
+
+	std::vector<std::string> getRegisterValues();
+
 private:
-public:
 
 	// 64 KiB of memory.
 	uint16_t memory[65536];
 
 	// 16-bit address buffer
-	uint16_t addressBuffer;
+	uint16_t addressBuffer = 0;
 
 	/* CPU registers and flags */
 	
 	// 8-bit accumulator (A)
-	uint8_t accumulator;
+	uint8_t accumulator = 0;
 
 	/* 8-bit status flags;
 	* Bit 7: (Z) Zero
@@ -103,13 +111,16 @@ public:
 	* Bit 5: (H) Half-carry (BCD)
 	* Bit 4: (C) Carry
 	* */
-	std::bitset<8> flags;
+	std::bitset<8> flags = std::bitset<8>(0);
 		
 	// 16- bit stack pointer
-	uint16_t stackPointer;
+	uint16_t stackPointer = 0;
 
 	// 16-bit program counter
-	uint16_t programCounter;
+	uint16_t programCounter = 0;
+
+	// Current number of cycles; when this reaches a certain threshold, reset back to zero.
+	int cycles = 0;
 	
 	/* REGISTER READ/WRITE */
 	// BC Register Pair
@@ -120,7 +131,6 @@ public:
 	registerPair HL;
 
 private:
-public:
 
 	/* =================================================================== UTILITY =============================================================== */
 

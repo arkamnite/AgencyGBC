@@ -1,7 +1,16 @@
 #include <stdio.h>
 #include <iostream>
 #include <chrono>
+#include <string>
+#include <vector>
 #include "CPU.h"
+
+void printReg(CPU* cpu)
+{
+	std::vector<std::string> v = cpu->getRegisterValues();
+	for (const auto& i : v)
+		std::cout << i << '\n';
+}
 
 int main()
 {
@@ -9,6 +18,7 @@ int main()
 	int x = 0;
 	
 	CPU cpu;
+	cpu.reset();
 
 	/*std::cout <<"BC Pair: " << cpu.BC.getPair() << std::endl;
 	cpu.BC.setHigh(0b10101011);
@@ -17,13 +27,8 @@ int main()
 	std::cout << "BC Pair: " << cpu.BC.getPair() << std::endl;
 	std::cout << "B value: " << cpu.BC.high << std::endl;
 	std::cout << "C value: " << cpu.BC.low << std::endl;*/
-
+	printReg(&cpu);
 	cpu.cycle();
-
-	uint8_t value = 0b10010010;
-	std::cout << cpu.BC.getPair().to_string() << "\n" << std::bitset<8>(value).to_string() << std::endl;
-	cpu.load(&cpu.BC.low, value);
-	std::cout << cpu.BC.getPair().to_string() << "\n" << std::bitset<8>(value).to_string() << std::endl;
 
 	std::cin >> x;
 }
