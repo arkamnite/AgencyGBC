@@ -140,6 +140,9 @@ private:
 	// It will then execute the correct opcode, and increment the program counter accordingly.
 	void decode_execute(uint16_t opcode);
 
+	// Will return the 16-bit immediate data. The lower byte is the first byte of data, and the higher byte is the second byte of immediate data.
+	uint16_t read16bits(int position);
+
 	/* =================================================================== OPCODES =============================================================== */
 	
 	/* -------------------------------------------------------------- 8-BIT OPCODES -------------------------------------------------------------- */
@@ -150,11 +153,20 @@ private:
 	// Load. Specifies a single register to load into, as well as a value to store.
 	void load(std::bitset<8>* reg, uint8_t val);
 
+	// Load the accumulator with an 8-bit value.
+	void loadAccumulator(uint8_t val);
+
 	// Load. Specifies a single register to load into, as well as a single register to load a value from.
 	void load(std::bitset<8>* destination, std::bitset<8>* source);
 
 	// Load. Specifies a register pair to load a value into, as well as a value to store.
 	void load(registerPair* regPair, uint8_t val);
+
+	// Load. Specifies a register pair to load a 16 bit value into, as well as the 16 bit value.
+	void load(registerPair* regPair, uint16_t val);
+
+	// Load. Specifies a register pair to load a 16 bit immediate value ALREADY IN MEMORY, relative to the memory position provided.
+	void load(registerPair* regPair, int pos);
 
 	// Load. Specifies a register pair to store the accumulator value INTO.
 	void load(registerPair* destination);
