@@ -46,6 +46,19 @@ std::vector<std::string> CPU::getRegisterValues()
 	return regvals;
 }
 
+std::vector<uint8_t> CPU::getRegisters()
+{
+	std::vector<uint8_t> values;
+	values.push_back(accumulator);
+	values.push_back(BC.high.to_ulong());
+	values.push_back(BC.low.to_ulong());
+	values.push_back(DE.high.to_ulong());
+	values.push_back(DE.low.to_ulong());
+	values.push_back(HL.high.to_ulong());
+	values.push_back(HL.low.to_ulong());
+	return values;
+}
+
 void CPU::cycle()
 {
 	uint16_t op = memory[programCounter];

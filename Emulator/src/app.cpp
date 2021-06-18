@@ -96,6 +96,8 @@ int main()
 	cpu.cycleLog();
 	cpu.cycleLog();
 
+	std::cout << std::hex << std::to_string(cpu.getRegisters()[1]) << std::endl;
+
 	/*cpu.cycle();
 	cpu.cycle();
 	cpu.cycle();

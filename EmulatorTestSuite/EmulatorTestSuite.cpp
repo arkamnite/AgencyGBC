@@ -1,5 +1,7 @@
 #include "pch.h"
-#include "../Emulator/src/CPU.h"
+#include <iostream>
+#include <cstdint>
+#include "../Emulator/src/CPU.cpp"
 #include "CppUnitTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -12,15 +14,14 @@ namespace EmulatorTestSuite
 		
 		CPU cpu;
 
-		TEST_METHOD(TestMethod1)
+		TEST_METHOD(LDBD8)
 		{
-		}
-
-		TEST_METHOD(LoadSingleRegisterValue)
-		{
-			uint8_t value = 0b10010010;
-			cpu.load(&cpu.BC.low, value);
-			Assert::IsTrue(cpu.BC.low == std::bitset<8>(value));
+			cpu.loadOpcode(0x0006);
+			cpu.loadOpcode(0x00FA);
+			cpu.resetPC();
+			cpu.cycle();
+			cpu.cycle();
+			Assert::IsTrue(0x00FA == cpu.getRegisters()[1]);
 		}
 
 	};

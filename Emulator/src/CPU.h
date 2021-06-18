@@ -94,6 +94,9 @@ public:
 
 	std::vector<std::string> getRegisterValues();
 
+	// Get the integer values stored in the registers.
+	std::vector<uint8_t> getRegisters();
+
 private:
 
 	// 64 KiB of memory.
