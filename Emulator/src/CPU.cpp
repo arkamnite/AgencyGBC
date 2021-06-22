@@ -59,6 +59,24 @@ std::vector<uint8_t> CPU::getRegisters()
 	return values;
 }
 
+void CPU::setSP(uint16_t val)
+{
+	stackPointer = val;
+}
+
+uint16_t CPU::getSP()
+{
+	return stackPointer;
+}
+
+uint16_t CPU::readMemory(uint16_t pos)
+{
+	if (pos >= MEMORY_MAX_RANGE)
+		return 0;
+	else
+		return memory[pos];
+}
+
 void CPU::cycle()
 {
 	uint16_t op = memory[programCounter];
@@ -90,6 +108,7 @@ void CPU::resetPC()
 void CPU::decode_execute(uint16_t opcode)
 {
 	uint8_t val = (uint8_t)memory[programCounter + 1];
+	uint16_t val16 = memory[programCounter + 1];
 	switch (opcode) {
 
 	/* =================================== ROW 0x000x ==============================*/
@@ -131,6 +150,9 @@ void CPU::decode_execute(uint16_t opcode)
 	case 0x0007: // TODO: RLCA
 		break;
 	case 0x0008: // TODO: LD (a16), SP
+		write16bitsBE(stackPointer, val16);
+		programCounter += 3;
+		cycles += 20;
 		break;
 	
 	/* =================================== ROW 0x001x ==============================*/
@@ -222,11 +244,38 @@ void CPU::decode_execute(uint16_t opcode)
 
 uint16_t CPU::read16bits(int position)
 {
-	// TODO: Implement bounds check.
-	uint16_t low = memory[position];
-	uint16_t high = memory[++position];
+	// Initialise both values to 0 in case the memory address is out of range.
+	uint16_t low = 0;
+	uint16_t high = 0;
+
+	// Perform bounds check on the memory- do this only once.
+	if (++position < (MEMORY_MAX_RANGE - 1))
+	{
+		low = memory[position];
+		high = memory[++position];
+	}
+
+	// Shift high-bits left by 8 bits.
 	high <<= 8;
 	return uint16_t(high + low);
+}
+
+void CPU::write16bitsBE(uint16_t value, const uint16_t position)
+{
+	// Perform bounds checking on the memory
+	if ((position+1) < (MEMORY_MAX_RANGE - 1))
+	{
+		uint8_t arr[2] = { 0 };
+		splitValue(value, arr);
+		memory[position] = arr[1];
+		memory[position + 1] = arr[0];
+	}
+}
+
+void CPU::splitValue(uint16_t value, uint8_t* arr)
+{
+	arr[0] = *((uint8_t*)&(value));
+	arr[1] = *((uint8_t*)&(value)+1);
 }
 
 /* =================================================================== OPCODES =============================================================== */

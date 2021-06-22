@@ -10,6 +10,8 @@
 #include <vector>
 #include <iomanip>
 
+#define MEMORY_MAX_RANGE 65536
+
 
 class registerPair {
 public:
@@ -97,10 +99,19 @@ public:
 	// Get the integer values stored in the registers.
 	std::vector<uint8_t> getRegisters();
 
+	// Used to directly modify the stack pointer.
+	void setSP(uint16_t val);
+
+	// Read the value of the stack pointer directly.
+	uint16_t getSP();
+
+	// Used to read a value directly from memory.
+	uint16_t readMemory(uint16_t pos);
+
 private:
 
 	// 64 KiB of memory.
-	uint16_t memory[65536];
+	uint16_t memory[MEMORY_MAX_RANGE] = { 0 };
 
 	// 16-bit address buffer
 	uint16_t addressBuffer = 0;
@@ -120,7 +131,7 @@ private:
 		
 	// 16- bit stack pointer
 	uint16_t stackPointer = 0;
-
+		
 	// 16-bit program counter
 	uint16_t programCounter = 0;
 
@@ -147,6 +158,12 @@ private:
 
 	// Will return the 16-bit immediate data. The lower byte is the first byte of data, and the higher byte is the second byte of immediate data.
 	uint16_t read16bits(int position);
+
+	// Will write a 16-bit value into memory, given a position within range. Stores in big-endian, i.e. the first byte is the lower half and the second byte is the higher half.
+	void write16bitsBE(uint16_t value, const uint16_t position);
+
+	// Will split a 16-bit value into two 8-bit values which will be stored in an array, provided by reference.
+	void splitValue(uint16_t value, uint8_t* arr);
 
 	/* =================================================================== OPCODES =============================================================== */
 	
