@@ -157,10 +157,13 @@ private:
 	void decode_execute(uint16_t opcode);
 
 	// Will return the 16-bit immediate data. The lower byte is the first byte of data, and the higher byte is the second byte of immediate data.
-	uint16_t read16bits(int position);
+	uint16_t read16bits(const uint16_t position);
 
 	// Will write a 16-bit value into memory, given a position within range. Stores in big-endian, i.e. the first byte is the lower half and the second byte is the higher half.
 	void write16bitsBE(uint16_t value, const uint16_t position);
+
+	// Will return the value stored in big-endian at this position in memory. Hence, it will construct a 16-bit value where the high-byte is at this position, and the low-byte is one position along in memory.
+	uint16_t readBEMemory(const uint16_t position);
 
 	// Will split a 16-bit value into two 8-bit values which will be stored in an array, provided by reference.
 	void splitValue(uint16_t value, uint8_t* arr);

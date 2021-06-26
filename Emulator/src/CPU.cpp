@@ -242,17 +242,17 @@ void CPU::decode_execute(uint16_t opcode)
 	}
 }
 
-uint16_t CPU::read16bits(int position)
+uint16_t CPU::read16bits(const uint16_t position)
 {
 	// Initialise both values to 0 in case the memory address is out of range.
 	uint16_t low = 0;
 	uint16_t high = 0;
 
 	// Perform bounds check on the memory- do this only once.
-	if (++position < (MEMORY_MAX_RANGE - 1))
+	if ((position + 1) < (MEMORY_MAX_RANGE - 1))
 	{
 		low = memory[position];
-		high = memory[++position];
+		high = memory[position + 1];
 	}
 
 	// Shift high-bits left by 8 bits.
@@ -270,6 +270,18 @@ void CPU::write16bitsBE(uint16_t value, const uint16_t position)
 		memory[position] = arr[1];
 		memory[position + 1] = arr[0];
 	}
+}
+
+uint16_t CPU::readBEMemory(const uint16_t position)
+{
+	uint16_t val = 0;
+	if ((position + 1) < (MEMORY_MAX_RANGE - 1))
+	{
+		val = memory[position];
+		val <<= 8;
+		val += memory[position + 1];
+	}
+	return val;
 }
 
 void CPU::splitValue(uint16_t value, uint8_t* arr)
@@ -336,6 +348,18 @@ void CPU::add(registerPair* source)
 
 void CPU::add(registerPair* destination, registerPair* source)
 {
+	// Reset the subtraction flag in all instances of adding two registers together.
+	flags.reset(6);
+	uint16_t opA = (uint16_t)destination->toInt();
+	uint16_t opB = (uint16_t)source->toInt();
+
+	// Add the two results and store them in the destination register.
+	destination->setPair(opA + opB);
+
+	// TODO: Check BCD addition stuff
+
+
+
 }
 
 void CPU::addc(uint8_t value)
