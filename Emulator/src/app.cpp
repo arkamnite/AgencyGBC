@@ -4,6 +4,10 @@
 #include <string>
 #include <vector>
 #include "CPU.h"
+#include "video.h"
+#include <SDL.h>
+#include "imgui.h"
+
 
 void printReg(CPU* cpu)
 {
@@ -12,7 +16,7 @@ void printReg(CPU* cpu)
 		std::cout << i << '\n';
 }
 
-int main()
+int main(int argc, char** args)
 {
 	std::cout << "hello world! This is the GB emulator." << std::endl;
 	int x = 0;
@@ -103,5 +107,13 @@ int main()
 	cpu.cycle();
 	cpu.cycle();*/
 
-	std::cin >> x;
+	//std::cin >> x;
+		
+	Video v(800, 600);
+	while (true)
+		v.drawVideo();
+
+	// End the program
+	return 0;
+
 }

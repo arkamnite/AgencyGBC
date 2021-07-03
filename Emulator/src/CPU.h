@@ -110,7 +110,7 @@ public:
 
 private:
 
-	// 64 KiB of memory.
+	// 64 KiB of memory. TODO: Change this to dynamic allocation
 	uint16_t memory[MEMORY_MAX_RANGE] = { 0 };
 
 	// 16-bit address buffer

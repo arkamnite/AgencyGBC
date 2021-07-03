@@ -109,6 +109,8 @@ void CPU::decode_execute(uint16_t opcode)
 {
 	uint8_t val = (uint8_t)memory[programCounter + 1];
 	uint16_t val16 = memory[programCounter + 1];
+	registerPair spPair; // Create registerPair with value of the stack pointer.
+	spPair.setPair(stackPointer);
 	switch (opcode) {
 
 	/* =================================== ROW 0x000x ==============================*/
@@ -154,6 +156,16 @@ void CPU::decode_execute(uint16_t opcode)
 		programCounter += 3;
 		cycles += 20;
 		break;
+	case 0x0009: // ADD HL, BC
+		add(&HL, &BC);
+		programCounter += 1;
+		cycles += 8;
+		break;
+	case 0x000B: // DEC BC
+		dec(&BC);
+		programCounter += 1;
+		cycles += 8;
+		break;
 	
 	/* =================================== ROW 0x001x ==============================*/
 	
@@ -167,66 +179,97 @@ void CPU::decode_execute(uint16_t opcode)
 		programCounter += 1;
 		cycles += 8;
 		break;
+	case 0x0019: // ADD HL, DE
+		add(&HL, &DE);
+		programCounter += 1;
+		cycles += 8;
+		break;
+	case 0x001B: // DEC DE
+		dec(&DE);
+		programCounter += 1;
+		cycles += 8;
+		break;
 
 	/* =================================== ROW 0x002x ==============================*/
+	case 0x0029: // ADD HL, HL
+		add(&HL, &HL);
+		programCounter += 1;
+		cycles += 8;
+		break;
+	case 0x002B: // DEC HL
+		dec(&HL);
+		programCounter += 1;
+		cycles += 8;
+		break;
 
 	/* =================================== ROW 0x003x ==============================*/
 	
-	case 0x003e:
+	case 0x003e: // LD A, d8
 		loadAccumulator(val);
 		programCounter += 2;
+		cycles += 8;
+		break;
+	case 0x0039: // ADD HL, SP TODO: Check this works
+		
+		add(&HL, &spPair);
+		programCounter += 1;
+		cycles += 8;
+		break;
+	case 0x003B: // DEC SP
+		stackPointer--; // Will cause overflow lmao
+		programCounter += 1;
 		cycles += 8;
 		break;
 	
 	/* =================================== ROW 0x004x ==============================*/
 	
 	/* Register to register load. 1 byte, 4 cycles. */
-	case 0x0040:
+	case 0x0040: // LD B, B
 		load(&BC.high, &BC.high);
 		programCounter += 1;
 		cycles += 4;
 		break;
-	case 0x0041:
+	case 0x0041: // LD B, C
 		load(&BC.high, &BC.low);
 		programCounter += 1;
 		cycles += 4;
 		break;
-	case 0x0042:
+	case 0x0042: // LD B, D
 		load(&BC.high, &DE.high);
 		programCounter += 1;
 		cycles += 4;
 		break;
-	case 0x0043:
+	case 0x0043: // LD B, E
 		load(&BC.high, &DE.low);
 		programCounter += 1;
 		cycles += 4;
 		break;
-	case 0x0044:
+	case 0x0044: // LD B, H
 		load(&BC.high, &HL.high);
 		programCounter += 1;
 		cycles += 4;
 		break;
-	case 0x0045:
+	case 0x0045: // LD B, L
 		load(&BC.high, &HL.low);
 		programCounter += 1;
 		cycles += 4;
 		break;
 	/* Load a value from one register to a register PAIR. 1 byte, 8 cycles. */
-	case 0x0046:
+	case 0x0046: // LD B, HL
 		break;
-	case 0x0047:
+	case 0x0047: // LD B, A
 		break;
-	case 0x0048:
+	case 0x0048: // LD C, B
 		break;
-	case 0x0049:
+	case 0x0049: // LD C, C
 		break;
-	case 0x004A:
+	case 0x004A: // LD C, D
 		break;
-	case 0x004B:
+	case 0x004B: // LD C, E
 		break;
-	case 0x004C:
+	case 0x004C: // LD C, H
 		break;
-	case 0x004D:
+	case 0x004D: // LD C, L
 		break;
 	case 0x004E:
 		break;
@@ -356,10 +399,11 @@ void CPU::add(registerPair* destination, registerPair* source)
 	// Add the two results and store them in the destination register.
 	destination->setPair(opA + opB);
 
+	// Set the carry flag if required:
+	if (opA + opB > UINT16_MAX)
+		flags.set(4, true);
+
 	// TODO: Check BCD addition stuff
-
-
-
 }
 
 void CPU::addc(uint8_t value)
