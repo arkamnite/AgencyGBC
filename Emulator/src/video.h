@@ -1,27 +1,44 @@
-#include <iostream>
-#include "imgui.h"
-#include <SDL.h>
+#pragma once
 
+#include <iostream>
+
+#include "imgui.h"
+#include "imgui_impl_sdl.h"
+#include "imgui_impl_opengl3.h"
+
+#include <SDL.h>
+#include <glad/glad.h>
+#include <glfw3.h>
 
 class Video
 {
-protected:
-
-	// SDL Surface pointer
-	SDL_Surface* winSurface;
-	// SDL Window pointer
-	SDL_Window* window;
-
-protected:
-	
-	// Initialise SDL.
-	int initVideo();
-		
 public:
+	Video();
 
-	Video(int x, int y);
+	void draw();
 
 	~Video();
 
-	void drawVideo();
+private:
+
+	const char* glsl_version;
+	SDL_WindowFlags window_flags;
+	SDL_Window* window;
+	SDL_GLContext gl_context;
+
+	bool show_demo_window = true;
+	bool show_another_window = false;
+	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+	//ImGuiIO& io;
+
+
+	// Main loop
+	bool done = false;
+
+	int initialise();
+
+	void initIMGUI();
+
+
+
 };

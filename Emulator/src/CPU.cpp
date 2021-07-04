@@ -29,7 +29,8 @@ std::vector<std::string> CPU::getRegisterValues()
 	std::vector<std::string> regvals = {};
 
 	std::stringstream acc;
-	acc << std::hex << std::uppercase << accumulator;
+	unsigned long acclong = accumulator;
+	acc << std::hex << std::uppercase << acclong;
 
 	regvals.push_back("Accumulator: " + acc.str());
 	regvals.push_back("BC: " + regToHex(&BC));

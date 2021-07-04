@@ -82,13 +82,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)\vendor\dearimgui;$(ProjectDir)\vendor\sdl\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)\vendor\sdl\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\vendor\glad\include;$(ProjectDir)\vendor\dearimgui;$(ProjectDir)\vendor\sdl\include;$(ProjectDir)\vendor\glfw\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\vendor\glfw\lib-vc2019;$(ProjectDir)\vendor\sdl\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)\vendor\dearimgui;$(ProjectDir)\vendor\sdl\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)\vendor\sdl\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\vendor\glad\include;$(ProjectDir)\vendor\dearimgui;$(ProjectDir)\vendor\sdl\include;$(ProjectDir)\vendor\glfw\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\vendor\glfw\lib-vc2019;$(ProjectDir)\vendor\sdl\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -130,7 +130,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,18 +147,24 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\CPU.h" />
+    <ClInclude Include="src\Video.h" />
     <ClInclude Include="vendor\dearimgui\imconfig.h" />
     <ClInclude Include="vendor\dearimgui\imgui.h" />
+    <ClInclude Include="vendor\dearimgui\imgui_impl_opengl3.h" />
     <ClInclude Include="vendor\dearimgui\imgui_impl_sdl.h" />
     <ClInclude Include="vendor\dearimgui\imgui_internal.h" />
     <ClInclude Include="vendor\dearimgui\imstb_rectpack.h" />
     <ClInclude Include="vendor\dearimgui\imstb_textedit.h" />
     <ClInclude Include="vendor\dearimgui\imstb_truetype.h" />
+    <ClInclude Include="vendor\glad\include\glad\glad.h" />
+    <ClInclude Include="vendor\glad\include\KHR\khrplatform.h" />
+    <ClInclude Include="vendor\glfw\include\glfw3.h" />
+    <ClInclude Include="vendor\glfw\include\glfw3native.h" />
     <ClInclude Include="vendor\sdl\include\begin_code.h" />
     <ClInclude Include="vendor\sdl\include\close_code.h" />
     <ClInclude Include="vendor\sdl\include\SDL.h" />
@@ -249,14 +255,15 @@
   <ItemGroup>
     <ClCompile Include="src\app.cpp" />
     <ClCompile Include="src\CPU.cpp" />
-    <ClCompile Include="src\video.cpp" />
-    <ClCompile Include="src\video.h" />
+    <ClCompile Include="src\Video.cpp" />
     <ClCompile Include="vendor\dearimgui\imgui.cpp" />
     <ClCompile Include="vendor\dearimgui\imgui_demo.cpp" />
     <ClCompile Include="vendor\dearimgui\imgui_draw.cpp" />
+    <ClCompile Include="vendor\dearimgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="vendor\dearimgui\imgui_impl_sdl.cpp" />
     <ClCompile Include="vendor\dearimgui\imgui_tables.cpp" />
     <ClCompile Include="vendor\dearimgui\imgui_widgets.cpp" />
+    <ClCompile Include="vendor\glad\include\glad.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="roms\cpu_instrs.gb" />
