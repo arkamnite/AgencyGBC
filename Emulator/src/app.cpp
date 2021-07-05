@@ -3,6 +3,8 @@
 #include <chrono>
 #include <string>
 #include <vector>
+#include <thread>
+#include "Windows.h"
 #include "CPU.h"
 #include "Video.h"
 
@@ -24,6 +26,11 @@ ImGuiWindowFlags imgui_window_flags = 0;
 // Main CPU
 CPU cpu;
 
+// Speed modifier to cycle the CPU at
+static float speedMod = 1.0f;
+
+// Signify whether to automatically cycle (run) the CPU
+static bool playCPU = false;
 
 void printReg(CPU* cpu)
 {
@@ -104,6 +111,11 @@ void showRegisters()
 			ImGui::Text(i.c_str());
 		}
 
+		static char mempos[5] = "";
+		char str[80];
+		int str_len = sprintf_s(str, "%d", cpu.readMemory(strtol(mempos, NULL, 16)));
+		ImGui::InputTextWithHint(str, "Memory:", mempos, 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
+
 
 		if (ImGui::SmallButton("Close"))
 			show_registers = false;
@@ -115,21 +127,10 @@ void showRegisters()
 // Show the controls for the CPU
 bool show_controls = true;
 
-char InputBuf[256];
-
-static char hexinput[5] = "";
-
-static int opcodeinput = 0x0000;
-
-
-static int TextEditCallbackStub(ImGuiInputTextCallbackData* data)
-{
-	return 0;
-}
-
 // This is used to provide an interface for various CPU controls.
 void showControls()
 {
+	static char hexinput[5] = "";
 	uint16_t opcode;
 	char opString[128] = "";
 
@@ -150,6 +151,14 @@ void showControls()
 		if (ImGui::Button("Reset Memory"))
 			cpu.resetMemory();
 
+		ImGui::SameLine();
+
+		if (ImGui::Button("Reset All"))
+		{
+			cpu.reset();  
+			cpu.resetMemory();
+		}
+
 		/*ImGui::NewLine();*/
 
 		ImGui::Separator();
@@ -158,10 +167,11 @@ void showControls()
 		if (ImGui::Button("Cycle"))
 			cpu.cycle();
 
-		ImGui::SameLine();
-		// TODO: Add the opcode loading
+		ImGui::Checkbox("Play / Pause", &playCPU);
 
-		ImGui::NewLine();
+		// TODO: Add the opcode loading
+		
+		ImGui::SliderFloat("CPU Speed", &speedMod, 0.0001, 1.0);
 
 		ImGui::Separator();
 
@@ -304,7 +314,10 @@ void draw(bool &done)
 	SDL_GL_SwapWindow(window);
 }
 
-
+void localCycle()
+{
+	cpu.cycle();
+}
 
 int main(int argc, char** args)
 {
@@ -346,9 +359,29 @@ int main(int argc, char** args)
 	std::cout << std::hex << std::to_string(cpu.getRegisters()[1]) << std::endl;*/
 
 	init(1270, 800);
+
+	// Create worker threads for drawing UI and running the CPU.
 	bool b = true;
+
+
+	// TODO: Work out the multithreading thing
+
 	while (b)
+	{
+		//std::thread drawing(draw, b);
 		draw(b);
+		//drawing.join();
+
+		if (playCPU)
+		{
+
+			//std::thread cycling(localCycle);
+			cpu.cycle();
+			std::this_thread::sleep_for(std::chrono::milliseconds((int)(0.000954653 * (1 / speedMod))));
+		}
+		
+	}
+
 
     return 0;
 

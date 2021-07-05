@@ -131,7 +131,8 @@ void CPU::decode_execute(uint16_t opcode)
 		cycles += 12;
 		break;
 	case 0x0002: // LD (BC),A
-		load(&BC);
+		//load(&BC);
+		memory[BC.toInt()] = accumulator;
 		programCounter += 1;
 		cycles += 8;
 		break;
@@ -175,8 +176,9 @@ void CPU::decode_execute(uint16_t opcode)
 	
 	/* =================================== ROW 0x001x ==============================*/
 	
-	case 0x0012: // LD (DE),A
-		load(&DE);
+	case 0x0012: // LD (DE),A 
+		//load(&DE);
+		memory[DE.toInt()] = accumulator;
 		programCounter += 1;
 		cycles += 8;
 		break;
@@ -216,7 +218,6 @@ void CPU::decode_execute(uint16_t opcode)
 		cycles += 8;
 		break;
 	case 0x0039: // ADD HL, SP TODO: Check this works
-		
 		add(&HL, &spPair);
 		programCounter += 1;
 		cycles += 8;
@@ -264,25 +265,421 @@ void CPU::decode_execute(uint16_t opcode)
 	case 0x0046: // LD B, HL
 		break;
 	case 0x0047: // LD B, A
+		load(&BC.high, accumulator);
+		programCounter += 1;
+		cycles += 4;
 		break;
 	case 0x0048: // LD C, B
+		load(&BC.low, &BC.high);
 		break;
 	case 0x0049: // LD C, C
+		load(&BC.low, &BC.low);
+		programCounter += 1;
+		cycles += 4;
 		break;
 	case 0x004A: // LD C, D
+		load(&BC.low, &DE.high);
+		programCounter += 1;
+		cycles += 4;
 		break;
 	case 0x004B: // LD C, E
+		load(&BC.low, &DE.low);
+		programCounter += 1;
+		cycles += 4;
 		break;
 	case 0x004C: // LD C, H
+		load(&BC.low, &HL.high);
+		programCounter += 1;
+		cycles += 4;
 		break;
 	case 0x004D: // LD C, L
+		load(&BC.low, &HL.low);
+		programCounter += 1;
+		cycles += 4;
 		break;
-	case 0x004E:
+	case 0x004E: // LD C, (HL) TODO: How does this work? Which 8 bits are we storing?
+		load(&BC.low, (uint8_t)read16bits(HL.toInt()));
+		programCounter += 1;
+		cycles += 8;
 		break;
-	case 0x004F:
+	case 0x004F: // LD C, A
 		load(&BC.low, accumulator);
 		programCounter++;
 		cycles += 4;
+		break;
+
+	/* =================================== ROW 0x005x ==============================*/
+	case 0x0050: // LD D, B
+		break;
+	case 0x0051: // LD D, C
+		break;
+	case 0x0052: // LD D, D
+		break;
+	case 0x0053: // LD D, E
+		break;
+	case 0x0054: // LD D, H
+		break;
+	case 0x0055: // LD D, L
+		break;
+	case 0x0056: // LD D, (HL)
+		break;
+	case 0x0057: // LD D, A
+		break;
+	case 0x0058: // LD E, B
+		break;
+	case 0x0059: // LD E, C
+		break;
+	case 0x005A: // LD E, D
+		break;
+	case 0x005B: // LD E, E
+		break;
+	case 0x005C: // LD E, H
+		break;
+	case 0x005D: // LD E, L
+		break;
+	case 0x005E: // LD E, (HL)
+		break;
+	case 0x005F: // LD E, A
+		break;
+	
+	/* =================================== ROW 0x006x ==============================*/
+	case 0x0060: // LD H, B
+		break;
+	case 0x0061: // LD H, C
+		break;
+	case 0x0062: // LD H, D
+		break;
+	case 0x0063: // LD H, E
+		break;
+	case 0x0064: // LD H, H
+		break;
+	case 0x0065: // LD H, L
+		break;
+	case 0x0066: // LD H, (HL)
+		break;
+	case 0x0067: // LD H, A
+		break;
+	case 0x0068: // LD L, B
+		break;	 
+	case 0x0069: // LD L, C
+		break;	 
+	case 0x006A: // LD L, D
+		break;	 
+	case 0x006B: // LD L, E
+		break;	 
+	case 0x006C: // LD L, H
+		break;	 
+	case 0x006D: // LD L, L
+		break;	 
+	case 0x006E: // LD L, (HL)
+		break;	 
+	case 0x006F: // LD L, A
+		break;
+
+	/* =================================== ROW 0x007x ==============================*/
+	case 0x0070: // LD H, B
+		break;	 
+	case 0x0071: // LD H, C
+		break;	 
+	case 0x0072: // LD H, D
+		break;	 
+	case 0x0073: // LD H, E
+		break;	 
+	case 0x0074: // LD H, H
+		break;	 
+	case 0x0075: // LD H, L
+		break;	 
+	case 0x0076: // LD H, (HL)
+		break;	 
+	case 0x0077: // LD H, A
+		break;	 
+	case 0x0078: // LD L, B
+		break;	 
+	case 0x0079: // LD L, C
+		break;	 
+	case 0x007A: // LD L, D
+		break;	 
+	case 0x007B: // LD L, E
+		break;	 
+	case 0x007C: // LD L, H
+		break;	 
+	case 0x007D: // LD L, L
+		break;	 
+	case 0x007E: // LD L, (HL)
+		break;	 
+	case 0x007F: // LD L, A
+		break;
+
+		/* =================================== ROW 0x008x ==============================*/
+	case 0x0080: // ADD A, B
+		break;
+	case 0x0081: // ADD A, C
+		break;
+	case 0x0082: // ADD A, D
+		break;
+	case 0x0083: // ADD A, E
+		break;
+	case 0x0084: // ADD A, L
+		break;
+	case 0x0085: // ADD A, L
+		break;
+	case 0x0086: // ADD A, HL
+		break;
+	case 0x0087: // ADD A, A
+		break;
+	case 0x0088: // ADC A, B
+		break;
+	case 0x0089: // ADC A, C
+		break;
+	case 0x008A: // ADC A, D
+		break;
+	case 0x008B: // ADC A, E
+		break;
+	case 0x008C: // ADC A, H
+		break;
+	case 0x008D: // ADC A, L
+		break;
+	case 0x008E: // ADC A, (HL)
+		break;
+	case 0x008F: // ADC A, A
+		break;
+
+		/* =================================== ROW 0x009x ==============================*/
+	case 0x0090: // SUB B
+		break;
+	case 0x0091: // SUB C
+		break;
+	case 0x0092: // SUB D
+		break;
+	case 0x0093: // SUB E
+		break;
+	case 0x0094: // SUB H
+		break;
+	case 0x0095: // SUB L
+		break;
+	case 0x0096: // SUB (HL)
+		break;
+	case 0x0097: // SUB A
+		break;
+	case 0x0098: // SUBC A, B
+		break;
+	case 0x0099: // SUBC A, C
+		break;
+	case 0x009A: // SUBC A, D
+		break;
+	case 0x009B: // SUBC A, E
+		break;
+	case 0x009C: // SUBC A, H
+		break;
+	case 0x009D: // SUBC A, L
+		break;
+	case 0x009E: // SUBC A, (HL)
+		break;
+	case 0x009F: // SUBC A, A
+		break;
+
+		/* =================================== ROW 0x00Ax ==============================*/
+	case 0x00A0: // AND B
+		break;
+	case 0x00A1: // AND C
+		break;
+	case 0x00A2: // AND D
+		break;
+	case 0x00A3: // AND E
+		break;
+	case 0x00A4: // AND H
+		break;
+	case 0x00A5: // AND L
+		break;
+	case 0x00A6: // AND (HL)
+		break;
+	case 0x00A7: // AND A
+		break;
+	case 0x00A8: // XOR B
+		break;	 
+	case 0x00A9: // XOR C
+		break;	 
+	case 0x00AA: // XOR D
+		break;	 
+	case 0x00AB: // XOR E
+		break;	 
+	case 0x00AC: // XOR H
+		break;	 
+	case 0x00AD: // XOR L
+		break;	 
+	case 0x00AE: // XOR (HL)
+		break;
+	case 0x00AF: // XOR A
+		break;
+
+		/* =================================== ROW 0x00Bx ==============================*/
+	case 0x00B0:
+		break;
+	case 0x00B1:
+		break;
+	case 0x00B2:
+		break;
+	case 0x00B3:
+		break;
+	case 0x00B4:
+		break;
+	case 0x00B5:
+		break;
+	case 0x00B6:
+		break;
+	case 0x00B7:
+		break;
+	case 0x00B8:
+		break;
+	case 0x00B9:
+		break;
+	case 0x00BA:
+		break;
+	case 0x00BB:
+		break;
+	case 0x00BC:
+		break;
+	case 0x00BD:
+		break;
+	case 0x00BE:
+		break;
+	case 0x00BF:
+		break;
+
+		/* =================================== ROW 0x00Cx ==============================*/
+	case 0x00C0:
+		break;
+	case 0x00C1:
+		break;
+	case 0x00C2:
+		break;
+	case 0x00C3:
+		break;
+	case 0x00C4:
+		break;
+	case 0x00C5:
+		break;
+	case 0x00C6:
+		break;
+	case 0x00C7:
+		break;
+	case 0x00C8:
+		break;
+	case 0x00C9:
+		break;
+	case 0x00CA:
+		break;
+	case 0x00CB:
+		break;
+	case 0x00CC:
+		break;
+	case 0x00CD:
+		break;
+	case 0x00CE:
+		break;
+	case 0x00CF:
+		break;
+
+		/* =================================== ROW 0x00Dx ==============================*/
+	case 0x00D0:
+		break;
+	case 0x00D1:
+		break;
+	case 0x00D2:
+		break;
+	case 0x00D3:
+		break;
+	case 0x00D4:
+		break;
+	case 0x00D5:
+		break;
+	case 0x00D6:
+		break;
+	case 0x00D7:
+		break;
+	case 0x00D8:
+		break;
+	case 0x00D9:
+		break;
+	case 0x00DA:
+		break;
+	case 0x00DB:
+		break;
+	case 0x00DC:
+		break;
+	case 0x00DD:
+		break;
+	case 0x00DE:
+		break;
+	case 0x00DF:
+		break;
+
+		/* =================================== ROW 0x00Ex ==============================*/
+	case 0x00E0:
+		break;
+	case 0x00E1:
+		break;
+	case 0x00E2:
+		break;
+	case 0x00E3:
+		break;
+	case 0x00E4:
+		break;
+	case 0x00E5:
+		break;
+	case 0x00E6:
+		break;
+	case 0x00E7:
+		break;
+	case 0x00E8:
+		break;
+	case 0x00E9:
+		break;
+	case 0x00EA:
+		break;
+	case 0x00EB:
+		break;
+	case 0x00EC:
+		break;
+	case 0x00ED:
+		break;
+	case 0x00EE:
+		break;
+	case 0x00EF:
+		break;
+
+		/* =================================== ROW 0x00Fx ==============================*/
+	case 0x00F0:
+		break;
+	case 0x00F1:
+		break;
+	case 0x00F2:
+		break;
+	case 0x00F3:
+		break;
+	case 0x00F4:
+		break;
+	case 0x00F5:
+		break;
+	case 0x00F6:
+		break;
+	case 0x00F7:
+		break;
+	case 0x00F8:
+		break;
+	case 0x00F9:
+		break;
+	case 0x00FA:
+		break;
+	case 0x00FB:
+		break;
+	case 0x00FC:
+		break;
+	case 0x00FD:
+		break;
+	case 0x00FE:
+		break;
+	case 0x00FF:
 		break;
 	default:
 		programCounter++;
