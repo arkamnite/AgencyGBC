@@ -87,7 +87,7 @@ bool show_demo_window = false;
 bool show_another_window = false;
 
 // Show the register values in a dialogue
-bool show_registers = false;
+bool show_registers = true;
 
 void showRegisters()
 {
@@ -104,20 +104,30 @@ void showRegisters()
 			ImGui::Text(i.c_str());
 		}
 
+
+		if (ImGui::SmallButton("Close"))
+			show_registers = false;
+		
 		ImGui::End();
 	}
 }
 
 // Show the controls for the CPU
-bool show_controls = false;
+bool show_controls = true;
 
 char InputBuf[256];
+
+static char hexinput[5] = "";
+
+static int opcodeinput = 0x0000;
+
 
 static int TextEditCallbackStub(ImGuiInputTextCallbackData* data)
 {
 	return 0;
 }
 
+// This is used to provide an interface for various CPU controls.
 void showControls()
 {
 	uint16_t opcode;
@@ -126,23 +136,50 @@ void showControls()
 	if (show_controls) {
 		ImGui::Begin("CPU Controls");
 
-		// Reset
-		
+		// Reset aspects of the CPU
 		if (ImGui::Button("Reset CPU"))
 			cpu.reset();
 
-		ImGui::Separator();
+		ImGui::SameLine();
 
-		if (ImGui::Button("Reset program counter"))
+		if (ImGui::Button("Reset PC"))
 			cpu.resetPC();
 
+		ImGui::SameLine();
+
+		if (ImGui::Button("Reset Memory"))
+			cpu.resetMemory();
+
+		/*ImGui::NewLine();*/
+
 		ImGui::Separator();
-		
+
+		// Cycle the CPU once
+		if (ImGui::Button("Cycle"))
+			cpu.cycle();
+
+		ImGui::SameLine();
 		// TODO: Add the opcode loading
 
 		ImGui::NewLine();
 
 		ImGui::Separator();
+
+		ImGui::InputTextWithHint("", "Opcode to load", hexinput, 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Load opcode"))
+		{
+			const char* val = hexinput;
+			cpu.loadOpcode(strtol(hexinput, NULL, 16));
+			std::cout << strtol(hexinput, NULL, 16) << std::endl;
+		}
+		
+		ImGui::Separator();
+
+		if (ImGui::Button("Close"))
+			show_controls = false;
 
 		ImGui::End();
 	}
@@ -203,16 +240,16 @@ void draw(bool &done)
 
 			ImGui::EndMenu();
 		}
+
+		if (ImGui::SmallButton("Exit Application"))
+			done = !done;
+
 		showRegisters();
 		showControls();
 
 		ImGui::EndMainMenuBar();
 	}
 	
-	
-	
-
-
 	// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
 	if (show_demo_window)
 		ImGui::ShowDemoWindow(&show_demo_window);
@@ -284,11 +321,11 @@ int main(int argc, char** args)
 	cpu = CPU();
 	cpu.reset();
 	
-	cpu.loadOpcode(0x0006);
+	/*cpu.loadOpcode(0x0006);
 	cpu.loadOpcode(0x00FA);
 	cpu.loadOpcode(0x0004);
 	cpu.loadOpcode(0x0003);
-	cpu.resetPC();
+	cpu.resetPC();*/
 
 	/*cpu.cycle();
 	printReg(&cpu);
@@ -301,12 +338,12 @@ int main(int argc, char** args)
 	cpu.cycle();
 	printReg(&cpu);*/
 
-	cpu.cycleLog();
+	/*cpu.cycleLog();
 	cpu.cycleLog();
 	cpu.cycleLog();
 	cpu.cycleLog();
 
-	std::cout << std::hex << std::to_string(cpu.getRegisters()[1]) << std::endl;
+	std::cout << std::hex << std::to_string(cpu.getRegisters()[1]) << std::endl;*/
 
 	init(1270, 800);
 	bool b = true;

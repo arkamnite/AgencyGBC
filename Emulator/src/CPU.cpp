@@ -105,6 +105,11 @@ void CPU::resetPC()
 	programCounter = 0;
 }
 
+void CPU::resetMemory()
+{
+	memset(memory, 0x00, MEMORY_MAX_RANGE);
+}
+
 
 void CPU::decode_execute(uint16_t opcode)
 {

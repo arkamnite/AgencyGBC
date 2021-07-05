@@ -94,6 +94,8 @@ public:
 
 	void resetPC();
 
+	void resetMemory();
+
 	std::vector<std::string> getRegisterValues();
 
 	// Get the integer values stored in the registers.
