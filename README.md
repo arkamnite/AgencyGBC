@@ -1,6 +1,6 @@
 # AgencyGBC
 
-## A Windows emulator for the GameBoy / GameBoy Colour.
+## A Windows emulator for the Game Boy / Game Boy Colour.
 
 I've picked this project primarily as a means to gain practical experience with STL, SDL, and creating a real Windows application- all the while hopefully maintaining a development process in which I can quickly add features to the application whilst it is already 'in release' as it were. In practice, this will most likely represent itself as allowing me to emulate different parts of the GameBoy (and later the GBC variant) fully, as I make more and more progress.
 
