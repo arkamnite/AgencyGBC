@@ -144,12 +144,18 @@ void showControls()
 		ImGui::SameLine();
 
 		if (ImGui::Button("Reset PC"))
+		{
 			cpu.resetPC();
+			playCPU = false;
+		}
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Reset Memory"))
+		{
 			cpu.resetMemory();
+			playCPU = false;
+		}
 
 		ImGui::SameLine();
 
@@ -157,6 +163,7 @@ void showControls()
 		{
 			cpu.reset();  
 			cpu.resetMemory();
+			playCPU = false;
 		}
 
 		/*ImGui::NewLine();*/
@@ -171,7 +178,7 @@ void showControls()
 
 		// TODO: Add the opcode loading
 		
-		ImGui::SliderFloat("CPU Speed", &speedMod, 0.0001, 1.0);
+		ImGui::SliderFloat("CPU Speed", &speedMod, 0.0001, 100);
 
 		ImGui::Separator();
 
@@ -183,7 +190,7 @@ void showControls()
 		{
 			const char* val = hexinput;
 			cpu.loadOpcode(strtol(hexinput, NULL, 16));
-			std::cout << strtol(hexinput, NULL, 16) << std::endl;
+			// std::cout << strtol(hexinput, NULL, 16) << std::endl;
 		}
 		
 		ImGui::Separator();
@@ -240,7 +247,7 @@ void draw(bool &done)
 			if (ImGui::MenuItem("Registers", "Alt + S", &show_registers))
 			{
 				//show_registers = !show_registers;
-				std::cout << show_registers << std::endl;
+				//std::cout << show_registers << std::endl;
 			}
 			// show controls
 			if (ImGui::MenuItem("CPU Controls", "Alt + C", &show_controls))
@@ -362,26 +369,31 @@ int main(int argc, char** args)
 
 	// Create worker threads for drawing UI and running the CPU.
 	bool b = true;
-
-
 	// TODO: Work out the multithreading thing
+
+	auto lastCycleTime = std::chrono::high_resolution_clock::now();
 
 	while (b)
 	{
 		//std::thread drawing(draw, b);
-		draw(b);
 		//drawing.join();
 
-		if (playCPU)
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		float dt = std::chrono::duration<float, std::chrono::milliseconds::period>(currentTime - lastCycleTime).count();
+
+		//std::cout << dt << std::endl;
+
+		//if (dt > 1000 && playCPU)if (dt > (0.000954653 * (speedMod)) && playCPU)
+		if (dt > (0.000954653 * (speedMod * speedMod)) && playCPU)
 		{
-
-			//std::thread cycling(localCycle);
+			dt = 0;
+			lastCycleTime = currentTime;
 			cpu.cycle();
-			std::this_thread::sleep_for(std::chrono::milliseconds((int)(0.000954653 * (1 / speedMod))));
+			std::cout << "TRIGGERRRR" << std::endl;
 		}
-		
-	}
 
+		draw(b);
+	}
 
     return 0;
 
