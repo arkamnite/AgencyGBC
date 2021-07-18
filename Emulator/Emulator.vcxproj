@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\CPU.h" />
+    <ClInclude Include="src\Display.h" />
     <ClInclude Include="src\Video.h" />
     <ClInclude Include="vendor\dearimgui\imconfig.h" />
     <ClInclude Include="vendor\dearimgui\imgui.h" />
@@ -255,6 +256,7 @@
   <ItemGroup>
     <ClCompile Include="src\app.cpp" />
     <ClCompile Include="src\CPU.cpp" />
+    <ClCompile Include="src\Display.cpp" />
     <ClCompile Include="src\Video.cpp" />
     <ClCompile Include="vendor\dearimgui\imgui.cpp" />
     <ClCompile Include="vendor\dearimgui\imgui_demo.cpp" />
@@ -267,6 +269,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="roms\cpu_instrs.gb" />
+    <None Include="src\GBSurfaceFS.glsl" />
+    <None Include="src\GBSurfaceVS.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\n64.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

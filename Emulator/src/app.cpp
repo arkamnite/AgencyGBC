@@ -6,7 +6,9 @@
 #include <thread>
 #include "Windows.h"
 #include "CPU.h"
+
 #include "Video.h"
+#include "Display.h"
 
 // SDL Window flags
 SDL_WindowFlags window_flags;
@@ -16,6 +18,9 @@ SDL_Window* window;
 
 // SDL OpenGL context
 SDL_GLContext gl_context;
+
+// SDL Surface
+SDL_Surface* surface = NULL;
 
 // ImGUI clear colour
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -318,7 +323,27 @@ void draw(bool &done)
 	glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
 	glClear(GL_COLOR_BUFFER_BIT);
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+	//surface = SDL_GetWindowSurface(window);
+
+	//SDL_Rect bg; // Our original surface for the GB background
+	//bg.x = 800;
+	//bg.y = 800;
+	//bg.w = 256;
+	//bg.h = 256;
+	//SDL_FillRect(surface, &bg, SDL_MapRGB(surface->format, 0xFF, 0xAF, 0xAE));
+
+	//SDL_Surface* pureSurface = SDL_CreateRGBSurface(0, 256, 256, 24, 0xff000000, 0x00ff0000, 0x0000ff00, 0);
+	//
+	//SDL_BlitSurface(surface, 0, pureSurface, 0); // Blit onto a purely RGB surface
+
+	//GLuint ret;
+	//glGenTextures(1, &ret);
+	//glBindTexture(GL_TEXTURE_2D, ret);
+	//glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, surface->pixels);
+
 	SDL_GL_SwapWindow(window);
+	SDL_UpdateWindowSurface(window);
 }
 
 void localCycle()
@@ -365,7 +390,7 @@ int main(int argc, char** args)
 
 	std::cout << std::hex << std::to_string(cpu.getRegisters()[1]) << std::endl;*/
 
-	init(1270, 800);
+	init(400, 800);
 
 	// Create worker threads for drawing UI and running the CPU.
 	bool b = true;
@@ -373,18 +398,20 @@ int main(int argc, char** args)
 
 	auto lastCycleTime = std::chrono::high_resolution_clock::now();
 
+	Display display = Display(800, 800);
+
 	while (b)
 	{
 		//std::thread drawing(draw, b);
 		//drawing.join();
 
 		auto currentTime = std::chrono::high_resolution_clock::now();
-		float dt = std::chrono::duration<float, std::chrono::milliseconds::period>(currentTime - lastCycleTime).count();
+		double dt = std::chrono::duration<float, std::chrono::milliseconds::period>(currentTime - lastCycleTime).count();
 
 		//std::cout << dt << std::endl;
 
 		//if (dt > 1000 && playCPU)if (dt > (0.000954653 * (speedMod)) && playCPU)
-		if (dt > (0.000954653 * (speedMod * speedMod)) && playCPU)
+		if (dt > (0.000954653 / ((double)speedMod * speedMod * speedMod)) && playCPU)
 		{
 			dt = 0;
 			lastCycleTime = currentTime;
@@ -393,6 +420,7 @@ int main(int argc, char** args)
 		}
 
 		draw(b);
+		display.Update();
 	}
 
     return 0;

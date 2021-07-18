@@ -315,6 +315,9 @@
     <ClInclude Include="vendor\glfw\include\glfw3native.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Display.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\app.cpp">
@@ -350,8 +353,18 @@
     <ClCompile Include="src\Video.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Display.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="roms\cpu_instrs.gb" />
+    <None Include="src\GBSurfaceVS.glsl" />
+    <None Include="src\GBSurfaceFS.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\n64.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

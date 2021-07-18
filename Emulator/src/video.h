@@ -39,6 +39,4 @@ private:
 
 	void initIMGUI();
 
-
-
 };
