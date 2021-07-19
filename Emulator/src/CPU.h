@@ -257,6 +257,11 @@ private:
 	// OR operation
 	void OR(uint8_t operand);
 
+	// Rotate the contents of this register to the left or right, modifying the appropriate bits. Send a 1 for rightwards shift, a 0 for leftwards shift.
+	void rotateCarry(uint8_t* src, bool shiftRight);
+
+	// Rotate the contents of this register pair to the left, modifying the appropriate bits.
+
 
 
 	/* -------------------------------------------------------------- 16-BIT OPCODES -------------------------------------------------------------- */

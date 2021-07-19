@@ -18,6 +18,9 @@ private:
 	// GB background surface
 	SDL_Surface* background = NULL;
 
+	// GB Window surface
+	SDL_Surface* window = NULL;
+
 	// Initialise the display with a set width and height.
 	bool init(float w, float h);
 

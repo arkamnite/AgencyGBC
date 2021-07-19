@@ -398,7 +398,7 @@ int main(int argc, char** args)
 
 	auto lastCycleTime = std::chrono::high_resolution_clock::now();
 
-	Display display = Display(800, 800);
+	Display display = Display(160 * 3, 144 * 3);
 
 	while (b)
 	{

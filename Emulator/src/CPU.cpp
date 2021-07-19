@@ -113,8 +113,8 @@ void CPU::resetMemory()
 
 void CPU::decode_execute(uint16_t opcode)
 {
-	uint8_t val = (uint8_t)memory[programCounter + 1];
-	uint16_t val16 = memory[programCounter + 1];
+	uint8_t val = (uint8_t)memory[programCounter + 1]; // 8-bit value found at the next location in memory.
+	uint16_t val16 = memory[programCounter + 1]; // 16-bit value found at the next location in memory.
 	registerPair spPair; // Create registerPair with value of the stack pointer.
 	spPair.setPair(stackPointer);
 	switch (opcode) {
@@ -157,6 +157,9 @@ void CPU::decode_execute(uint16_t opcode)
 		cycles += 4;
 		break;
 	case 0x0007: // TODO: RLCA
+		rotateCarry(&accumulator, false);
+		programCounter += 1;
+		cycles += 4;
 		break;
 	case 0x0008: // TODO: LD (a16), SP
 		write16bitsBE(stackPointer, val16);
@@ -172,6 +175,11 @@ void CPU::decode_execute(uint16_t opcode)
 		dec(&BC);
 		programCounter += 1;
 		cycles += 8;
+		break;
+	case 0x000F: // RRCA TODO: CHECK
+		rotateCarry(&accumulator, true);
+		programCounter += 1;
+		cycles += 4;
 		break;
 	
 	/* =================================== ROW 0x001x ==============================*/
@@ -863,4 +871,31 @@ void CPU::AND(uint8_t operand)
 
 void CPU::OR(uint8_t operand)
 {
+}
+
+void CPU::rotateCarry(uint8_t* src, bool shiftRight)
+{
+	// Create a local copy of the register.
+	uint8_t val = *src;
+	
+	// Store the value of bit 7 and bit 0
+	uint8_t bit7 = val & 0b10000000;
+	uint8_t bit0 = val & 0b00000001;
+	
+	// Shift all bits leftwards or rightwards, depending on the boolean.
+	shiftRight ? *src >>= 1 : *src <<= 1 ;
+
+	// Toggle bit 0 if we have shifted left, and bit 7 if we have shifted right.
+	shiftRight ? *src = (*src | bit0) : *src = (*src | bit7);
+
+	// Toggle the carry bit as required
+	if (shiftRight)
+	{
+		flags.set(4, (bit0 == 0b0000001));
+	}
+	else
+	{
+		flags.set(4, (bit7 == 0b1000000));
+	}
+	
 }
