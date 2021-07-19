@@ -260,9 +260,11 @@ private:
 	// Rotate the contents of this register to the left or right, modifying the appropriate bits. Send a 1 for rightwards shift, a 0 for leftwards shift.
 	void rotateCarry(uint8_t* src, bool shiftRight);
 
-	// Rotate the contents of this register pair to the left, modifying the appropriate bits.
+	// Rotate the contents of this register pair, and use the carry flag.
+	void rotateThroughCarry(uint8_t* src, bool shiftRight);
 
-
+	// Return the signed value, according to Two's Complement, of the input 8-bit number:
+	int8_t fromTC(uint8_t num);
 
 	/* -------------------------------------------------------------- 16-BIT OPCODES -------------------------------------------------------------- */
 };

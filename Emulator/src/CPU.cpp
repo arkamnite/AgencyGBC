@@ -205,6 +205,12 @@ void CPU::decode_execute(uint16_t opcode)
 		programCounter += 1;
 		cycles += 8;
 		break;
+	case 0x0017:
+		rotateThroughCarry(&accumulator, false);
+		programCounter += 1;
+		cycles += 4;
+	case 0x001F:
+		rotateThroughCarry(&accumulator, true);
 
 	/* =================================== ROW 0x002x ==============================*/
 	case 0x0029: // ADD HL, HL
@@ -746,6 +752,8 @@ void CPU::splitValue(uint16_t value, uint8_t* arr)
 
 /* =================================================================== OPCODES =============================================================== */
 
+/* TODO: Check all flags are correctly RESET or ZEROED */
+
 void CPU::load(uint16_t addr, uint8_t val)
 {
 
@@ -845,6 +853,10 @@ void CPU::inc(registerPair* reg)
 {
 	uint16_t value = reg->toInt();
 	reg->setPair(++value);
+
+	// Reset the SUB flag
+	flags.reset(6);
+
 }
 
 void CPU::inc(std::bitset<8>* reg)
@@ -898,4 +910,45 @@ void CPU::rotateCarry(uint8_t* src, bool shiftRight)
 		flags.set(4, (bit7 == 0b1000000));
 	}
 	
+	// Reset the other flags as required
+	flags.reset(7); // Zero flag
+	flags.reset(6); // SUB
+	flags.reset(5); // Half carry
+
+}
+
+void CPU::rotateThroughCarry(uint8_t* src, bool shiftRight)
+{
+	// Rotate all bits, then set 0 to the contents of the carry flag.
+	shiftRight ? *src >>= 1 : *src <<= 1;
+
+	// Toggle the lowest or highest bit depending on the carry flag.
+	if (flags.test(4) && !shiftRight)
+		*src = *src | 0b00000001;
+	else if (flags.test(4) && shiftRight)
+		*src = *src | 0b10000000;
+
+	// Reset the other flags as required
+	flags.reset(7); // Zero flag
+	flags.reset(6); // SUB
+	flags.reset(5); // Half carry
+}
+
+int8_t CPU::fromTC(uint8_t num)
+{
+	if ((num & 0b10000000) != 0b10000000) // If the number is negative in TC
+	{
+		return int8_t(num);
+	}
+	else // The number has a leading 1, i.e. it is negative. 
+	{
+		// Using bitset to speed up these operations
+		std::bitset<8> toBeFlipped(num);
+		for (int i = 0; i < 8; i++)
+		{
+			toBeFlipped.flip(i);
+		}
+
+		return (int8_t)(-1 * (toBeFlipped.to_ulong() + 1));
+	}
 }

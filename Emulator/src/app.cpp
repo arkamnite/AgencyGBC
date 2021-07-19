@@ -355,7 +355,7 @@ int main(int argc, char** args)
 {
 	std::cout << "hello world! This is the GB emulator." << std::endl;
 	int x = 0;
-	
+
 	/*uint8_t val1 = 0x00FA;
 	uint16_t val2 = 0x1000;
 	uint16_t val3 = val1 + val2;
