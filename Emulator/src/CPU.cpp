@@ -186,6 +186,10 @@ void CPU::decode_execute(uint16_t opcode)
 	
 	/* =================================== ROW 0x001x ==============================*/
 	
+	case 0x0011: // LD DE, d16 TODO: Find out what the hell is going on here
+		DE.setPair(read16bits(programCounter + 1));
+		programCounter += 3;
+		cycles += 12;
 	case 0x0012: // LD (DE),A 
 		//load(&DE);
 		memory[DE.toInt()] = accumulator;
@@ -204,7 +208,7 @@ void CPU::decode_execute(uint16_t opcode)
 		break;
 	case 0x0018: // JR, s8
 		//std::cout << "Begin PC jump: " << programCounter << " step: " << +fromTC((uint8_t)readMemory(programCounter + 1))  << std::endl;
-		programCounter = programCounter + fromTC((uint8_t)readMemory(programCounter + 1));
+		programCounter = programCounter + fromTC(val);
 		//std::cout << "Completed PC jump: " << programCounter << std::endl;
 		cycles += 12;
 		break;
@@ -213,13 +217,36 @@ void CPU::decode_execute(uint16_t opcode)
 		programCounter += 1;
 		cycles += 8;
 		break;
+	case 0x001A: // LD A, (DE)
+		accumulator = (uint8_t)readMemory((uint16_t)DE.toInt());
+		programCounter += 1;
+		cycles += 8;
+		break;
 	case 0x001B: // DEC DE
 		dec(&DE);
 		programCounter += 1;
 		cycles += 8;
 		break;
-	case 0x001F:
+	case 0x001C: // INC E
+		inc(&DE.low);
+		programCounter += 1;
+		cycles += 4;
+		break;
+	case 0x001D: // DEC E
+		dec(&DE.low);
+		programCounter += 1;
+		cycles += 4;
+		break;
+	case 0x001E: // LD E, d8
+		DE.setLow(val);
+		programCounter += 2;
+		cycles += 8;
+		break;
+	case 0x001F: // RRA
 		rotateThroughCarry(&accumulator, true);
+		programCounter += 1;
+		cycles += 4;
+		break;
 
 	/* =================================== ROW 0x002x ==============================*/
 	case 0x0029: // ADD HL, HL
