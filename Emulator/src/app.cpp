@@ -398,7 +398,7 @@ int main(int argc, char** args)
 
 	auto lastCycleTime = std::chrono::high_resolution_clock::now();
 
-	Display display = Display(160 * 3, 144 * 3);
+	//Display display = Display(160 * 3, 144 * 3);
 
 	while (b)
 	{
@@ -416,11 +416,11 @@ int main(int argc, char** args)
 			dt = 0;
 			lastCycleTime = currentTime;
 			cpu.cycle();
-			std::cout << "TRIGGERRRR" << std::endl;
+			//std::cout << "TRIGGERRRR" << std::endl;
 		}
 
 		draw(b);
-		display.Update();
+		//display.Update();
 	}
 
     return 0;

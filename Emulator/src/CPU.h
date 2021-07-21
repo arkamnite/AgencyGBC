@@ -9,6 +9,7 @@
 #include <sstream>
 #include <vector>
 #include <iomanip>
+#include <inttypes.h>
 
 #define MEMORY_MAX_RANGE 65536
 

@@ -116,6 +116,8 @@ void CPU::decode_execute(uint16_t opcode)
 	uint8_t val = (uint8_t)memory[programCounter + 1]; // 8-bit value found at the next location in memory.
 	uint16_t val16 = memory[programCounter + 1]; // 16-bit value found at the next location in memory.
 	registerPair spPair; // Create registerPair with value of the stack pointer.
+	uint16_t s8 = readMemory(programCounter + 1);
+	s8 >>= 8;
 	spPair.setPair(stackPointer);
 	switch (opcode) {
 
@@ -195,6 +197,17 @@ void CPU::decode_execute(uint16_t opcode)
 		programCounter += 1;
 		cycles += 8;
 		break;
+	case 0x0017: // RLA
+		rotateThroughCarry(&accumulator, false);
+		programCounter += 1;
+		cycles += 4;
+		break;
+	case 0x0018: // JR, s8
+		//std::cout << "Begin PC jump: " << programCounter << " step: " << +fromTC((uint8_t)readMemory(programCounter + 1))  << std::endl;
+		programCounter = programCounter + fromTC((uint8_t)readMemory(programCounter + 1));
+		//std::cout << "Completed PC jump: " << programCounter << std::endl;
+		cycles += 12;
+		break;
 	case 0x0019: // ADD HL, DE
 		add(&HL, &DE);
 		programCounter += 1;
@@ -205,10 +218,6 @@ void CPU::decode_execute(uint16_t opcode)
 		programCounter += 1;
 		cycles += 8;
 		break;
-	case 0x0017:
-		rotateThroughCarry(&accumulator, false);
-		programCounter += 1;
-		cycles += 4;
 	case 0x001F:
 		rotateThroughCarry(&accumulator, true);
 
