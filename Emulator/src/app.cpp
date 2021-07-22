@@ -29,7 +29,7 @@ ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 ImGuiWindowFlags imgui_window_flags = 0;
 
 // Main CPU
-CPU cpu;
+CPU *cpu;
 
 // Speed modifier to cycle the CPU at
 static float speedMod = 1.0f;
@@ -104,7 +104,7 @@ bool show_registers = true;
 void showRegisters()
 {
 	// Retrieve vector of string values from cpu.
-	std::vector<std::string> v = cpu.getRegisterValues();
+	std::vector<std::string> v = cpu->getRegisterValues();
 
 	if (show_registers)
 	{
@@ -118,7 +118,7 @@ void showRegisters()
 
 		static char mempos[5] = "";
 		char str[80];
-		int str_len = sprintf_s(str, "%d", cpu.readMemory(strtol(mempos, NULL, 16)));
+		int str_len = sprintf_s(str, "%d", cpu->readMemory(strtol(mempos, NULL, 16)));
 		ImGui::InputTextWithHint(str, "Memory:", mempos, 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
 
 
@@ -144,13 +144,13 @@ void showControls()
 
 		// Reset aspects of the CPU
 		if (ImGui::Button("Reset CPU"))
-			cpu.reset();
+			cpu->reset();
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Reset PC"))
 		{
-			cpu.resetPC();
+			cpu->resetPC();
 			playCPU = false;
 		}
 
@@ -158,7 +158,7 @@ void showControls()
 
 		if (ImGui::Button("Reset Memory"))
 		{
-			cpu.resetMemory();
+			cpu->resetMemory();
 			playCPU = false;
 		}
 
@@ -166,8 +166,8 @@ void showControls()
 
 		if (ImGui::Button("Reset All"))
 		{
-			cpu.reset();  
-			cpu.resetMemory();
+			cpu->reset();  
+			cpu->resetMemory();
 			playCPU = false;
 		}
 
@@ -177,12 +177,10 @@ void showControls()
 
 		// Cycle the CPU once
 		if (ImGui::Button("Cycle"))
-			cpu.cycle();
+			cpu->cycle();
 
 		ImGui::Checkbox("Play / Pause", &playCPU);
 
-		// TODO: Add the opcode loading
-		
 		ImGui::SliderFloat("CPU Speed", &speedMod, 0.0001, 100);
 
 		ImGui::Separator();
@@ -194,7 +192,7 @@ void showControls()
 		if (ImGui::Button("Load opcode"))
 		{
 			const char* val = hexinput;
-			cpu.loadOpcode(strtol(hexinput, NULL, 16));
+			cpu->loadOpcode(strtol(hexinput, NULL, 16));
 			// std::cout << strtol(hexinput, NULL, 16) << std::endl;
 		}
 		
@@ -348,7 +346,7 @@ void draw(bool &done)
 
 void localCycle()
 {
-	cpu.cycle();
+	cpu->cycle();
 }
 
 int main(int argc, char** args)
@@ -363,8 +361,8 @@ int main(int argc, char** args)
 	std::cout << std::hex << val3 << std::endl;
 	std::cout << std::hex << castTest << std::endl;*/
 
-	cpu = CPU();
-	cpu.reset();
+	cpu = new CPU();
+	cpu->reset();
 	
 	/*cpu.loadOpcode(0x0006);
 	cpu.loadOpcode(0x00FA);
@@ -394,8 +392,6 @@ int main(int argc, char** args)
 
 	// Create worker threads for drawing UI and running the CPU.
 	bool b = true;
-	// TODO: Work out the multithreading thing
-
 	auto lastCycleTime = std::chrono::high_resolution_clock::now();
 
 	//Display display = Display(160 * 3, 144 * 3);
@@ -415,7 +411,7 @@ int main(int argc, char** args)
 		{
 			dt = 0;
 			lastCycleTime = currentTime;
-			cpu.cycle();
+			cpu->cycle();
 			//std::cout << "TRIGGERRRR" << std::endl;
 		}
 

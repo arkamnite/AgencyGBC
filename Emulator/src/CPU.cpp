@@ -32,11 +32,15 @@ std::vector<std::string> CPU::getRegisterValues()
 	unsigned long acclong = accumulator;
 	acc << std::hex << std::uppercase << acclong;
 
-	regvals.push_back("Accumulator: " + acc.str());
+	regvals.push_back("A: " + acc.str());
 	regvals.push_back("BC: " + regToHex(&BC));
 	regvals.push_back("DE: " + regToHex(&DE));
 	regvals.push_back("HL: " + regToHex(&HL));
 	regvals.push_back("PC: " + std::to_string(programCounter));
+	regvals.push_back("Z: " + std::to_string(flags.test(7)));
+	regvals.push_back("N: " + std::to_string(flags.test(6)));
+	regvals.push_back("H: " + std::to_string(flags.test(5)));
+	regvals.push_back("C: " + std::to_string(flags.test(4)));
 
 	std::stringstream opS;
 	opS << std::hex << std::uppercase << memory[programCounter - 1];
@@ -158,7 +162,7 @@ void CPU::decode_execute(uint16_t opcode)
 		programCounter += 2;
 		cycles += 4;
 		break;
-	case 0x0007: // TODO: RLCA
+	case 0x0007: // RLCA
 		rotateCarry(&accumulator, false);
 		programCounter += 1;
 		cycles += 4;
@@ -201,15 +205,39 @@ void CPU::decode_execute(uint16_t opcode)
 		programCounter += 1;
 		cycles += 8;
 		break;
+	case 0x0014: // INC D
+		inc(&DE.high);
+
+		if (DE.high.to_ulong() == 0) // Set zero-flag if required.
+			flags.set(7);
+
+		flags.reset(6); // N = 0
+
+		// TODO: How to toggle H flag?
+
+		programCounter += 1;
+		cycles += 8;
+		break;
+	case 0x0015: // DEC D
+		dec(&DE.high);
+
+		if (DE.high.to_ulong() == 0) // Set zero-flag if required.
+			flags.set(7);
+
+		flags.set(6); // N = 1
+
+		// TODO: How to toggle H flag?
+
+		programCounter += 1;
+		cycles += 8;
+		break;
 	case 0x0017: // RLA
 		rotateThroughCarry(&accumulator, false);
 		programCounter += 1;
 		cycles += 4;
 		break;
 	case 0x0018: // JR, s8
-		//std::cout << "Begin PC jump: " << programCounter << " step: " << +fromTC((uint8_t)readMemory(programCounter + 1))  << std::endl;
 		programCounter = programCounter + fromTC(val);
-		//std::cout << "Completed PC jump: " << programCounter << std::endl;
 		cycles += 12;
 		break;
 	case 0x0019: // ADD HL, DE
@@ -249,6 +277,75 @@ void CPU::decode_execute(uint16_t opcode)
 		break;
 
 	/* =================================== ROW 0x002x ==============================*/
+	case 0x0020: // JR NZ, s8
+		if (!flags.test(7)) { // If the Z flag is unset, jump s8.
+			programCounter = programCounter + fromTC(val);
+			cycles += 12;
+		}
+		else { // If the Z flag is set, move to the next instruction.
+			programCounter += 2;
+			cycles += 12;
+		}
+		break;
+	case 0x0021: // LD HL, d16
+		HL.setPair(read16bits(programCounter + 1));
+		programCounter += 3;
+		cycles += 12;
+		break;
+	case 0x0022: // LD (HL+), A
+		memory[HL.toInt()] = accumulator; // Store A
+		HL.setPair(HL.toInt() + 1); // Inc HL
+		programCounter += 1;
+		cycles += 8;
+		break;
+	case 0x0023: // INC HL
+		inc(&HL);
+		programCounter += 1;
+		cycles += 8;
+		break;
+	case 0x0024: // INC H
+		inc(&HL.high);
+
+		if (HL.high.to_ulong() == 0) // Set zero-flag if required.
+			flags.set(7);
+
+		flags.reset(6); // N = 0
+
+		// TODO: How to toggle H flag?
+
+		programCounter += 1;
+		cycles += 4;
+		break;
+	case 0x0025: // DEC H
+		dec(&HL.high);
+
+		if (HL.high.to_ulong() == 0) // Set zero-flag if required.
+			flags.set(7);
+
+		flags.set(6); // N = 1
+
+		// TODO: How to toggle H flag?
+
+		programCounter += 1;
+		cycles += 4;
+		break;
+	case 0x0026: // LD H, d8
+		HL.setHigh(val);
+		programCounter += 2;
+		cycles += 8;
+		break;
+	case 0x0027: // TODO: DAA
+		break;
+	case 0x0028: // JR Z, s8
+		if (flags.test(7)) { // If the Z flag is set, jump s8.
+			programCounter = programCounter + fromTC(val);
+			cycles += 12;
+		}
+		else { // If the Z flag is unset, move to the next instruction.
+			programCounter += 2;
+			cycles += 12;
+		}
+		break;
 	case 0x0029: // ADD HL, HL
 		add(&HL, &HL);
 		programCounter += 1;
@@ -259,13 +356,51 @@ void CPU::decode_execute(uint16_t opcode)
 		programCounter += 1;
 		cycles += 8;
 		break;
+	case 0x002F: // CPL (1s complement of A)
+		accumulator = ~accumulator; // NOT operator
+		flags.set(6); // Set the SUB(N) flag
+		flags.set(5); // Set the HC flag.
+		programCounter += 1;
+		cycles += 4;
+		break;
 
 	/* =================================== ROW 0x003x ==============================*/
-	
-	case 0x003e: // LD A, d8
-		loadAccumulator(val);
-		programCounter += 2;
-		cycles += 8;
+	case 0x0030: // JR NC, s8
+		if (!flags.test(4)) { // If the C flag is unset, jump s8.
+			programCounter = programCounter + fromTC(val);
+			cycles += 12;
+		}
+		else { // If the C flag is set, move to the next instruction.
+			programCounter += 2;
+			cycles += 12;
+		}
+		break;
+	case 0x0031: // LD HL, d16
+		break;
+	case 0x0032: // LD (HL+), A
+		break;
+	case 0x0033: // INC SP
+		break;
+	case 0x0034: // INC (HL)
+		break;
+	case 0x0035: // DEC (HL)
+		break;
+	case 0x0036: // LD (HL), d8
+		break;
+	case 0x0037: // SCF
+		flags.set(4);
+		programCounter += 1;
+		cycles += 4;
+		break;
+	case 0x0038: // JR C, s8
+		if (flags.test(4)) { // If the C flag is set, jump s8.
+			programCounter = programCounter + fromTC(val);
+			cycles += 12;
+		}
+		else { // If the C flag is unset, move to the next instruction.
+			programCounter += 2;
+			cycles += 12;
+		}
 		break;
 	case 0x0039: // ADD HL, SP TODO: Check this works
 		add(&HL, &spPair);
@@ -276,6 +411,18 @@ void CPU::decode_execute(uint16_t opcode)
 		stackPointer--; // Will cause overflow lmao
 		programCounter += 1;
 		cycles += 8;
+		break;
+	case 0x003E: // LD A, d8
+		loadAccumulator(val);
+		programCounter += 2;
+		cycles += 8;
+		break;
+	case 0x003F: // CCF (!CY)
+		flags.flip(4); // !CY
+		flags.reset(5); // HC = 0
+		flags.reset(6); // N = 0
+		programCounter += 1;
+		cycles += 4;
 		break;
 	
 	/* =================================== ROW 0x004x ==============================*/
