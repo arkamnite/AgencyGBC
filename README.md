@@ -4,11 +4,13 @@
 
 I've picked this project primarily as a means to gain practical experience with STL, SDL, and creating a real Windows application- all the while hopefully maintaining a development process in which I can quickly add features to the application whilst it is already 'in release' as it were. In practice, this will most likely represent itself as allowing me to emulate different parts of the GameBoy (and later the GBC variant) fully, as I make more and more progress.
 
-## Current Status: Game Boy
-- [X] Implementing 8-bit opcodes
+## Current Status: Game Boy 🎮
+### `general to-do list`
+- [X] Implementing 8-bit opcodes (currently ~50% complete)
 - [ ] Implementing 16-bit opcodes
 - [X] Implement GUI
 - [ ] Implement basic sprite table / OAM
+- [ ] Implement sprite rendering
 - [ ] Implement ROM reading
 - [ ] Support wider range of ROMs
 - [ ] Migrate to a Game Boy Colour
